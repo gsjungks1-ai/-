@@ -274,11 +274,13 @@ function processResults(names,alertData,specialData){
     return {name:name,mainLevel:mainLevel,mainNote:mainNote,subRegions:subRegions};
   });
 
-  /* 특별여행주의보: country_nm 필드 사용 */
-  /* remark에 "특별여행주의보" 문구가 있는 국가를 자동 감지 */
+  /* remark에 "특별여행주의보" 문구가 있는 국가를 자동 감지 (NAME_MAP 적용) */
   var specials=[];
   countries.forEach(function(c){
-    var matched=allItems.find(function(item){return item.country_nm===c.name;});
+    var apiName=NAME_MAP[c.name]||c.name;
+    var matched=allItems.find(function(item){
+      return item.country_nm===apiName||item.country_nm===c.name;
+    });
     if(matched&&matched.remark&&matched.remark.indexOf('특별여행주의보')!==-1){
       specials.push({country:c.name});
     }
