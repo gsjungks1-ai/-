@@ -275,13 +275,17 @@ function processResults(names,alertData,specialData){
   });
 
   /* remark에 "특별여행주의보" 문구가 있는 국가를 자동 감지 (NAME_MAP 적용) */
+  /* find 대신 filter로 모든 항목 검사 - 여러 지역 중 하나라도 특별주의보면 감지 */
   var specials=[];
   countries.forEach(function(c){
     var apiName=NAME_MAP[c.name]||c.name;
-    var matched=allItems.find(function(item){
+    var matchedAll=allItems.filter(function(item){
       return item.country_nm===apiName||item.country_nm===c.name;
     });
-    if(matched&&matched.remark&&matched.remark.indexOf('특별여행주의보')!==-1){
+    var hasSpecial=matchedAll.some(function(item){
+      return item.remark&&item.remark.indexOf('특별여행주의보')!==-1;
+    });
+    if(hasSpecial){
       specials.push({country:c.name});
     }
   });
