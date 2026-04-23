@@ -226,11 +226,22 @@ function processResults(names,alertData,specialData){
     if(!Array.isArray(allItems))allItems=[allItems];
   }catch(e){allItems=[];}
 
+  /* 우리가 쓰는 이름 → API 공식 국가명 매핑 */
+  var NAME_MAP={
+    '튀르키예':'튀르키예공화국',
+    '터키':'튀르키예공화국',
+    '미국':'미합중국',
+    '네팔':'네팔연방',
+    '러시아':'러시아',
+    '베네수엘라':'베네수엘라볼리바르'
+  };
+
   var countries=names.map(function(name){
-    /* 한글 국가명 완전일치 우선, 부분일치 허용 */
+    /* API 공식 국가명으로 변환 */
+    var apiName=NAME_MAP[name]||name;
     var matched=allItems.filter(function(item){
       var cn=item.country_nm||'';
-      return cn===name;
+      return cn===apiName||cn===name;
     });
 
     if(matched.length===0){
