@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>여행경보 조회 시스템</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2235;
+  --border: #1e2d45;
+  --text: #e8edf5;
+  --muted: #6b7fa3;
+  --accent: #3b82f6;
+  --lv1: #eab308;
+  --lv2: #f97316;
+  --lv3: #ef4444;
+  --lv4: #9ca3af;
+  --special: #a855f7;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px 80px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ── 헤더 ── */
+header { text-align: center; margin-bottom: 40px; }
+
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 100px; padding: 6px 16px;
+  font-size: 12px; font-family: 'DM Mono', monospace;
+  color: var(--accent); letter-spacing: 0.08em; margin-bottom: 20px;
+}
+.logo-badge::before {
+  content: ''; width: 6px; height: 6px;
+  border-radius: 50%; background: #22c55e;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+h1 {
+  font-size: clamp(26px, 5vw, 44px); font-weight: 900;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #e8edf5 0%, #6b9fd4 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 10px;
+}
+.subtitle { color: var(--muted); font-size: 14px; }
+
+/* ── 검색 영역 ── */
+.search-wrap {
+  width: 100%; max-width: 760px;
+  margin-bottom: 32px;
+  position: relative; /* 드롭다운 기준점 */
+}
+
+.search-box {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-box:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+#globeBtn {
+  width: 52px; flex-shrink: 0;
+  background: transparent; border: none;
+  font-size: 20px; cursor: pointer;
+  color: var(--muted); transition: color 0.2s;
+  border-radius: 16px 0 0 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+#globeBtn:hover, #globeBtn.active { color: var(--accent); }
+
+#searchInput {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 15px;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 18px 8px;
+}
+#searchInput::placeholder { color: var(--muted); }
+
+#searchBtn {
+  background: var(--accent); border: none; color: white;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 14px; font-weight: 700;
+  padding: 18px 28px; cursor: pointer;
+  transition: background 0.2s; flex-shrink: 0;
+  border-radius: 0 16px 16px 0;
+}
+#searchBtn:hover { background: #2563eb; }
+#searchBtn:disabled { background: var(--border); cursor: not-allowed; }
+
+/* ── 드롭다운 ── */
+#dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  z-index: 999;
+  overflow: hidden;
+  display: none;
+}
+#dropdown.open { display: block; }
+
+.dd-header {
+  padding: 14px 18px 10px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.dd-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.dd-actions { display: flex; gap: 8px; }
+
+.dd-clear {
+  font-size: 11px; font-family: 'Noto Sans KR', sans-serif;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--muted);
+  padding: 4px 10px; cursor: pointer;
+}
+.dd-clear:hover { border-color: var(--accent); color: var(--text); }
+
+.dd-apply {
+  font-size: 11px; font-family: 'Noto Sans KR', sans-serif;
+  background: var(--accent); border: none;
+  border-radius: 6px; color: white;
+  padding: 4px 12px; cursor: pointer; font-weight: 700;
+}
+.dd-apply:hover { background: #2563eb; }
+
+/* 선택 태그 */
+#selectedTags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  padding: 10px 18px;
+}
+#selectedTags:empty { display: none; }
+
+.tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 100px; padding: 3px 10px;
+  font-size: 12px; color: var(--accent);
+}
+.tag-x {
+  cursor: pointer; background: none; border: none;
+  color: var(--accent); font-size: 14px; line-height: 1; padding: 0;
+  opacity: 0.6;
+}
+.tag-x:hover { opacity: 1; }
+
+/* 대륙 탭 */
+#continentTabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 18px;
+  overflow-x: auto;
+}
+.ctab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  padding: 8px 12px; cursor: pointer; white-space: nowrap;
+  margin-bottom: -1px; transition: all 0.15s;
+}
+.ctab:hover { color: var(--text); }
+.ctab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* 국가 그리드 */
+#countryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+  padding: 12px 18px 16px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+#countryGrid::-webkit-scrollbar { width: 4px; }
+#countryGrid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.copt {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  color: var(--muted); cursor: pointer; user-select: none;
+  transition: all 0.15s;
+}
+.copt:hover { border-color: var(--accent); color: var(--text); background: rgba(59,130,246,0.08); }
+.copt.on { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.12); }
+.copt-flag { font-size: 16px; flex-shrink: 0; }
+
+/* ── 빠른 버튼 ── */
+.hint { font-size: 12px; color: var(--muted); margin-top: 10px; padding-left: 4px; }
+.quick-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.qlabel { font-size: 11px; color: var(--muted); align-self: center; }
+.qbtn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 100px; color: var(--muted);
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  padding: 5px 13px; cursor: pointer; transition: all 0.2s;
+}
+.qbtn:hover { border-color: var(--accent); color: var(--text); background: rgba(59,130,246,0.08); }
+
+/* ── 결과 ── */
+.result-area { width: 100%; max-width: 760px; }
+
+.loading {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 20px; padding: 60px 20px; color: var(--muted);
+}
+.spinner {
+  width: 36px; height: 36px;
+  border: 2px solid var(--border); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.lstep { font-size: 13px; opacity: 0; animation: fin 0.5s ease forwards; }
+.lstep.s1 { animation-delay: 0.3s; }
+.lstep.s2 { animation-delay: 1.6s; }
+.lstep.s3 { animation-delay: 3.0s; }
+@keyframes fin { to { opacity: 1; } }
+
+.rcard {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 20px; overflow: hidden;
+  animation: up 0.4s ease; margin-bottom: 16px;
+}
+@keyframes up { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+.rcard-head {
+  padding: 20px 28px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.rcard-title { font-size: 15px; font-weight: 700; color: var(--muted); }
+.live-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 100px; padding: 3px 10px;
+  font-size: 10px; color: var(--accent); font-family: 'DM Mono', monospace;
+}
+
+.notice-wrap { padding: 24px 28px 20px; }
+.notice-box {
+  background: #080c18; border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px 26px;
+  font-size: 14px; line-height: 2.1;
+}
+.nrow { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.nlabel { font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.nlabel.l1 { color: var(--lv1); }
+.nlabel.l2 { color: var(--lv2); }
+.nlabel.l3 { color: var(--lv3); }
+.nlabel.l4 { color: var(--lv4); }
+.nlabel.ls { color: var(--special); }
+.nval { word-break: keep-all; }
+.nnote { color: var(--muted); font-size: 12.5px; margin-top: 6px; line-height: 1.6; }
+
+.copy-btn {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 14px; margin-left: auto;
+  background: var(--accent); border: none; border-radius: 10px;
+  color: white; font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px; font-weight: 700; padding: 10px 22px;
+  cursor: pointer; transition: background 0.2s;
+}
+.copy-btn:hover { background: #2563eb; }
+.copy-btn.ok { background: #16a34a; }
+
+.src-section { padding: 0 28px 22px; border-top: 1px solid var(--border); padding-top: 16px; }
+.src-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.src-link {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--accent); text-decoration: none;
+  padding: 7px 12px; margin-bottom: 5px;
+  background: rgba(59,130,246,0.06);
+  border: 1px solid rgba(59,130,246,0.15); border-radius: 8px;
+  word-break: break-all;
+}
+.src-link:hover { background: rgba(59,130,246,0.12); }
+
+.disclaimer {
+  font-size: 11px; color: var(--muted); text-align: center;
+  line-height: 1.7; padding: 14px 16px;
+  background: var(--surface2); border-radius: 10px;
+  border: 1px solid var(--border); margin-top: 8px;
+}
+.disclaimer a { color: var(--accent); text-decoration: none; }
+
+.err-card { text-align: center; padding: 48px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
+.err-icon { font-size: 40px; margin-bottom: 16px; }
+.err-msg { color: var(--muted); font-size: 14px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<!-- 복사용 숨김 textarea -->
+<textarea id="copyTarget" style="position:absolute;left:-9999px;top:-9999px;opacity:0;" readonly></textarea>
+
+<header>
+  <div class="logo-badge">🔍 실시간 웹검색 · 외교부 여행경보 조회</div>
+  <h1>여행경보 조회</h1>
+  <p class="subtitle">복수 국가 입력 → 단계별 자동 분류 → 바로 복사</p>
+</header>
+
+<div class="search-wrap" id="searchWrap">
+
+  <div class="search-box">
+    <button id="globeBtn" title="국가 선택">🌐</button>
+    <input id="searchInput" type="text"
+      placeholder="예: 일본, 베트남, 튀르키예  또는 🌐 클릭해서 선택"
+      autocomplete="off" />
+    <button id="searchBtn">조회하기</button>
+  </div>
+
+  <!-- 드롭다운 (search-wrap 기준으로 absolute) -->
+  <div id="dropdown">
+    <div class="dd-header">
+      <span class="dd-title">🌍 국가 선택 (중복 가능)</span>
+      <div class="dd-actions">
+        <button class="dd-clear" id="clearBtn">선택 초기화</button>
+        <button class="dd-apply" id="applyBtn">✓ 적용하기</button>
+      </div>
+    </div>
+    <div id="selectedTags"></div>
+    <div id="continentTabs"></div>
+    <div id="countryGrid"></div>
+  </div>
+
+  <div class="hint">💡 쉼표(,)로 직접 입력하거나 🌐 클릭해서 국가를 선택하세요</div>
+
+  <div class="quick-row">
+    <span class="qlabel">예시:</span>
+    <button class="qbtn" data-q="일본">🇯🇵 일본</button>
+    <button class="qbtn" data-q="중국">🇨🇳 중국</button>
+    <button class="qbtn" data-q="베트남">🇻🇳 베트남</button>
+    <button class="qbtn" data-q="튀르키예">🇹🇷 튀르키예</button>
+    <button class="qbtn" data-q="스페인, 포르투갈">🇪🇸 스페인+포르투갈</button>
+  </div>
+</div>
+
+<div class="result-area" id="resultArea"></div>
+
+<script>
+/* ════════════════════════════════════════════
+   국가 데이터
+════════════════════════════════════════════ */
+var CONTINENTS = [
+  { id:'asia', label:'🌏 아시아', list:[
+    {n:'일본',f:'🇯🇵'},{n:'중국',f:'🇨🇳'},{n:'베트남',f:'🇻🇳'},{n:'태국',f:'🇹🇭'},
+    {n:'필리핀',f:'🇵🇭'},{n:'인도네시아',f:'🇮🇩'},{n:'말레이시아',f:'🇲🇾'},{n:'싱가포르',f:'🇸🇬'},
+    {n:'캄보디아',f:'🇰🇭'},{n:'라오스',f:'🇱🇦'},{n:'미얀마',f:'🇲🇲'},{n:'인도',f:'🇮🇳'},
+    {n:'네팔',f:'🇳🇵'},{n:'스리랑카',f:'🇱🇰'},{n:'방글라데시',f:'🇧🇩'},{n:'파키스탄',f:'🇵🇰'},
+    {n:'몽골',f:'🇲🇳'},{n:'대만',f:'🇹🇼'},{n:'홍콩',f:'🇭🇰'},{n:'마카오',f:'🇲🇴'}
+  ]},
+  { id:'europe', label:'🌍 유럽', list:[
+    {n:'프랑스',f:'🇫🇷'},{n:'독일',f:'🇩🇪'},{n:'이탈리아',f:'🇮🇹'},{n:'스페인',f:'🇪🇸'},
+    {n:'포르투갈',f:'🇵🇹'},{n:'영국',f:'🇬🇧'},{n:'네덜란드',f:'🇳🇱'},{n:'벨기에',f:'🇧🇪'},
+    {n:'스위스',f:'🇨🇭'},{n:'오스트리아',f:'🇦🇹'},{n:'체코',f:'🇨🇿'},{n:'폴란드',f:'🇵🇱'},
+    {n:'헝가리',f:'🇭🇺'},{n:'그리스',f:'🇬🇷'},{n:'크로아티아',f:'🇭🇷'},{n:'튀르키예',f:'🇹🇷'},
+    {n:'스웨덴',f:'🇸🇪'},{n:'노르웨이',f:'🇳🇴'},{n:'덴마크',f:'🇩🇰'},{n:'핀란드',f:'🇫🇮'},
+    {n:'우크라이나',f:'🇺🇦'},{n:'러시아',f:'🇷🇺'}
+  ]},
+  { id:'mideast', label:'🕌 중동', list:[
+    {n:'이스라엘',f:'🇮🇱'},{n:'요르단',f:'🇯🇴'},{n:'이집트',f:'🇪🇬'},{n:'사우디아라비아',f:'🇸🇦'},
+    {n:'아랍에미리트',f:'🇦🇪'},{n:'카타르',f:'🇶🇦'},{n:'쿠웨이트',f:'🇰🇼'},{n:'오만',f:'🇴🇲'},
+    {n:'이란',f:'🇮🇷'},{n:'이라크',f:'🇮🇶'},{n:'레바논',f:'🇱🇧'},{n:'시리아',f:'🇸🇾'}
+  ]},
+  { id:'americas', label:'🌎 아메리카', list:[
+    {n:'미국',f:'🇺🇸'},{n:'캐나다',f:'🇨🇦'},{n:'멕시코',f:'🇲🇽'},{n:'브라질',f:'🇧🇷'},
+    {n:'아르헨티나',f:'🇦🇷'},{n:'칠레',f:'🇨🇱'},{n:'페루',f:'🇵🇪'},{n:'볼리비아',f:'🇧🇴'},
+    {n:'콜롬비아',f:'🇨🇴'},{n:'에콰도르',f:'🇪🇨'},{n:'쿠바',f:'🇨🇺'},{n:'과테말라',f:'🇬🇹'},
+    {n:'코스타리카',f:'🇨🇷'}
+  ]},
+  { id:'oceania', label:'🦘 오세아니아', list:[
+    {n:'호주',f:'🇦🇺'},{n:'뉴질랜드',f:'🇳🇿'},{n:'괌',f:'🇬🇺'},{n:'사이판',f:'🇲🇵'},{n:'피지',f:'🇫🇯'}
+  ]},
+  { id:'africa', label:'🌍 아프리카', list:[
+    {n:'모로코',f:'🇲🇦'},{n:'튀니지',f:'🇹🇳'},{n:'케냐',f:'🇰🇪'},{n:'탄자니아',f:'🇹🇿'},
+    {n:'남아프리카공화국',f:'🇿🇦'},{n:'에티오피아',f:'🇪🇹'},{n:'나이지리아',f:'🇳🇬'},{n:'가나',f:'🇬🇭'}
+  ]}
+];
+
+/* ════════════════════════════════════════════
+   상태
+════════════════════════════════════════════ */
+var selected = [];          // 선택된 국가 이름 배열
+var currentTab = 'asia';    // 현재 대륙 탭
+var ddOpen = false;         // 드롭다운 열림 여부
+var noticeText = '';        // 복사할 텍스트
+
+/* ════════════════════════════════════════════
+   드롭다운
+════════════════════════════════════════════ */
+function openDD() {
+  ddOpen = true;
+  document.getElementById('dropdown').classList.add('open');
+  document.getElementById('globeBtn').classList.add('active');
+  renderTabs();
+  renderGrid();
+}
+
+function closeDD() {
+  ddOpen = false;
+  document.getElementById('dropdown').classList.remove('open');
+  document.getElementById('globeBtn').classList.remove('active');
+}
+
+function renderTabs() {
+  var el = document.getElementById('continentTabs');
+  el.innerHTML = '';
+  CONTINENTS.forEach(function(c) {
+    var b = document.createElement('button');
+    b.className = 'ctab' + (c.id === currentTab ? ' active' : '');
+    b.textContent = c.label;
+    b.addEventListener('click', function(e) {
+      e.stopPropagation();
+      currentTab = c.id;
+      document.querySelectorAll('.ctab').forEach(function(x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      renderGrid();
+    });
+    el.appendChild(b);
+  });
+}
+
+function renderGrid() {
+  var cont = CONTINENTS.find(function(c) { return c.id === currentTab; });
+  var el = document.getElementById('countryGrid');
+  el.innerHTML = '';
+  cont.list.forEach(function(country) {
+    var div = document.createElement('div');
+    div.className = 'copt' + (selected.indexOf(country.n) !== -1 ? ' on' : '');
+    div.innerHTML = '<span class="copt-flag">' + country.f + '</span>' + country.n;
+    div.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var idx = selected.indexOf(country.n);
+      if (idx === -1) { selected.push(country.n); div.classList.add('on'); }
+      else { selected.splice(idx, 1); div.classList.remove('on'); }
+      renderTags();
+    });
+    el.appendChild(div);
+  });
+}
+
+function renderTags() {
+  var el = document.getElementById('selectedTags');
+  el.innerHTML = '';
+  selected.forEach(function(name) {
+    var span = document.createElement('span');
+    span.className = 'tag';
+    span.textContent = name + ' ';
+    var x = document.createElement('button');
+    x.className = 'tag-x';
+    x.textContent = '×';
+    x.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var i = selected.indexOf(name);
+      if (i !== -1) selected.splice(i, 1);
+      renderTags();
+      renderGrid();
+    });
+    span.appendChild(x);
+    el.appendChild(span);
+  });
+}
+
+/* ════════════════════════════════════════════
+   AI 조회
+════════════════════════════════════════════ */
+var PROMPT = '당신은 대한민국 외교부 해외안전여행(0404.go.kr) 여행경보 전문 어시스턴트입니다.\n'
+  + '웹검색 도구로 각 국가의 현재 여행경보 단계를 확인하고, 반드시 아래 JSON 형식으로만 응답하세요.\n\n'
+  + '[여행경보 단계] 0=없음 1=여행유의 2=여행자제 3=여행제한 4=여행금지\n\n'
+  + '[규칙] mainNote는 지역 범위만 간결하게. 이력/이유/권장문구 금지. 모든 입력 국가 포함 필수.\n\n'
+  + '반드시 JSON만 반환(마크다운 없이):\n'
+  + '{"countries":[{"name":"국가명","mainLevel":1,"mainNote":"전 지역","subRegions":[{"level":2,"levelName":"여행자제","areas":"지역명"}]}],"specialAlerts":[{"country":"국가명","areas":"지역명"}],"webSearched":true,"sources":[{"title":"제목","url":"https://..."}]}';
+
+function doSearch() {
+  var query = document.getElementById('searchInput').value.trim();
+  if (!query) return;
+
+  closeDD();
+
+  var btn = document.getElementById('searchBtn');
+  var area = document.getElementById('resultArea');
+
+  btn.disabled = true;
+  btn.textContent = '조회 중...';
+  noticeText = '';
+
+  area.innerHTML =
+    '<div class="loading">'
+    + '<div class="spinner"></div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;text-align:center">'
+    + '<div class="lstep s1">🔍 외교부 여행경보 웹검색 중...</div>'
+    + '<div class="lstep s2">📄 국가별 경보 단계 수집 중...</div>'
+    + '<div class="lstep s3">✅ 분류 및 정리 중...</div>'
+    + '</div></div>';
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 8000,
+      system: PROMPT,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: '다음 국가들의 현재 외교부 여행경보 단계를 웹검색으로 확인 후 JSON만 응답: ' + query }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.error) throw new Error(data.error.message);
+
+    var allText = '';
+    var searched = false;
+    (data.content || []).forEach(function(b) {
+      if (b.type === 'text') allText += b.text;
+      if (b.type === 'tool_use') searched = true;
+    });
+
+    // JSON 추출
+    var m = allText.match(/\{[\s\S]*\}/);
+    if (!m) throw new Error('응답에서 JSON을 찾지 못했습니다.');
+
+    var parsed;
+    try {
+      parsed = JSON.parse(m[0]);
+    } catch(e) {
+      // 잘린 경우 복구 시도
+      var t = m[0].replace(/,\s*$/, '');
+      var opens  = (t.match(/\[/g) || []).length;
+      var closes = (t.match(/\]/g) || []).length;
+      for (var i = 0; i < opens - closes; i++) t += ']';
+      var opens2  = (t.match(/\{/g) || []).length;
+      var closes2 = (t.match(/\}/g) || []).length;
+      for (var j = 0; j < opens2 - closes2; j++) t += '}';
+      parsed = JSON.parse(t);
+    }
+
+    parsed.webSearched = searched || !!parsed.webSearched;
+    renderResult(parsed);
+  })
+  .catch(function(err) {
+    console.error(err);
+    area.innerHTML =
+      '<div class="err-card">'
+      + '<div class="err-icon">⚠️</div>'
+      + '<div class="err-msg">오류가 발생했습니다.<br><small>' + err.message + '</small><br><br>잠시 후 다시 시도해 주세요.</div>'
+      + '</div>';
+  })
+  .finally(function() {
+    btn.disabled = false;
+    btn.textContent = '조회하기';
+  });
+}
+
+/* ════════════════════════════════════════════
+   결과 렌더링
+════════════════════════════════════════════ */
+function renderResult(data) {
+  var area = document.getElementById('resultArea');
+  var countries = data.countries || [];
+  var specials  = data.specialAlerts || [];
+  var byLv = { 1:[], 2:[], 3:[], 4:[] };
+
+  countries.forEach(function(c) {
+    var lv = c.mainLevel;
+    if (lv >= 1 && lv <= 4) {
+      var s = c.name + (c.mainNote ? '(' + c.mainNote + ')' : '');
+      byLv[lv].push(s);
+    }
+    (c.subRegions || []).forEach(function(r) {
+      if (r.level >= 1 && r.level <= 4) {
+        byLv[r.level].push(c.name + '(' + r.areas + ')');
+      }
+    });
+  });
+
+  // 복사용 텍스트
+  var lines = [
+    '■ 여행유의 : ' + byLv[1].join(', '),
+    '■ 여행자제 : ' + byLv[2].join(', '),
+    '■ 여행제한 : ' + byLv[3].join(', '),
+    '■ 여행금지 : ' + byLv[4].join(', ')
+  ];
+  specials.forEach(function(s) {
+    lines.push('[특별] 특별여행주의보 : ' + s.country + '(' + s.areas + ')');
+  });
+  lines.push("※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
+  noticeText = lines.join('\n');
+
+  // 고시문 HTML
+  var defs = [
+    {lv:1, label:'■ 여행유의', cls:'l1'},
+    {lv:2, label:'■ 여행자제', cls:'l2'},
+    {lv:3, label:'■ 여행제한', cls:'l3'},
+    {lv:4, label:'■ 여행금지', cls:'l4'}
+  ];
+  var rows = '';
+  defs.forEach(function(d) {
+    rows += '<div class="nrow"><span class="nlabel ' + d.cls + '">' + d.label + ' :</span>'
+          + '<span class="nval">' + byLv[d.lv].join(', ') + '</span></div>';
+  });
+  specials.forEach(function(s) {
+    rows += '<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span>'
+          + '<span class="nval">' + s.country + '(' + s.areas + ')</span></div>';
+  });
+  rows += '<div class="nnote">※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
+
+  // 출처
+  var srcs = '';
+  (data.sources || []).forEach(function(s) {
+    srcs += '<a class="src-link" href="' + s.url + '" target="_blank" rel="noopener">↗ ' + (s.title || s.url) + '</a>';
+  });
+
+  area.innerHTML =
+    '<div class="rcard">'
+    + '<div class="rcard-head">'
+    +   '<div class="rcard-title">📋 고시문 (복사 후 바로 사용)</div>'
+    +   (data.webSearched ? '<div class="live-badge">🔍 실시간 웹검색 반영</div>' : '')
+    + '</div>'
+    + '<div class="notice-wrap">'
+    +   '<div class="notice-box">' + rows + '</div>'
+    +   '<button class="copy-btn" id="copyBtn">📋 텍스트 복사</button>'
+    + '</div>'
+    + (srcs ? '<div class="src-section"><div class="src-label">🔗 참고 출처</div>' + srcs + '</div>' : '')
+    + '</div>'
+    + '<div class="disclaimer">⚠️ AI 웹검색 기반 정보로 공식 정보와 다소 차이가 있을 수 있습니다.<br>'
+    + '중요한 결정 전 <a href="https://www.0404.go.kr" target="_blank">외교부 해외안전여행 (0404.go.kr)</a>에서 직접 확인하세요.</div>';
+
+  // 복사 버튼 이벤트 (동적으로 생성된 요소이므로 여기서 바인딩)
+  document.getElementById('copyBtn').addEventListener('click', doCopy);
+}
+
+/* ════════════════════════════════════════════
+   복사
+════════════════════════════════════════════ */
+function doCopy() {
+  if (!noticeText) return;
+  var btn = document.getElementById('copyBtn');
+
+  function onOk() {
+    btn.textContent = '✅ 복사됨!';
+    btn.classList.add('ok');
+    setTimeout(function() { btn.textContent = '📋 텍스트 복사'; btn.classList.remove('ok'); }, 2000);
+  }
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(noticeText).then(onOk).catch(fallback);
+  } else {
+    fallback();
+  }
+
+  function fallback() {
+    var ta = document.getElementById('copyTarget');
+    ta.value = noticeText;
+    ta.style.left = '0'; ta.style.top = '0';
+    ta.removeAttribute('readonly');
+    ta.focus(); ta.select();
+    try { if (document.execCommand('copy')) onOk(); }
+    catch(e) { alert('복사 실패. 직접 선택해서 복사해 주세요.'); }
+    ta.setAttribute('readonly','');
+    ta.style.left = '-9999px';
+  }
+}
+
+/* ════════════════════════════════════════════
+   이벤트 바인딩 (DOM 완전 로드 후)
+════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', function() {
+
+  /* 지구본 */
+  document.getElementById('globeBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (ddOpen) closeDD(); else openDD();
+  });
+
+  /* 조회 버튼 */
+  document.getElementById('searchBtn').addEventListener('click', doSearch);
+
+  /* 엔터 */
+  document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  /* 초기화 */
+  document.getElementById('clearBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    selected = [];
+    renderTags();
+    renderGrid();
+  });
+
+  /* 적용 */
+  document.getElementById('applyBtn').addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (selected.length === 0) return;
+    document.getElementById('searchInput').value = selected.join(', ');
+    closeDD();
+    doSearch();
+  });
+
+  /* 드롭다운 내부 클릭 전파 차단 */
+  document.getElementById('dropdown').addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+
+  /* 빠른 검색 버튼 */
+  document.querySelectorAll('.qbtn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.getElementById('searchInput').value = btn.getAttribute('data-q');
+      doSearch();
+    });
+  });
+
+  /* 외부 클릭 시 드롭다운 닫기 */
+  document.addEventListener('click', function() {
+    if (ddOpen) closeDD();
+  });
+
+});
+</script>
+</body>
+</html>
