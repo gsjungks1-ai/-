@@ -305,7 +305,7 @@ function renderResult(countries,specials){
   lines.push('■ 여행자제 : '+byLv[2].join(', '));
   lines.push('■ 여행제한 : '+byLv[3].join(', '));
   lines.push('■ 여행금지 : '+byLv[4].join(', '));
-  specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'(직접 확인하기 : https://www.0404.go.kr/dev/newest_warn.mofa)');});
+  specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'(직접 확인하기 : https://www.0404.go.kr)');});
   lines.push("※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
   noticeText=lines.join('\n');
 
