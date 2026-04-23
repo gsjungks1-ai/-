@@ -319,7 +319,7 @@ function renderResult(countries,specials){
     rows+='<div class="nrow"><span class="nlabel '+d.cls+'">'+d.label+' :</span><span class="nval">'+(byLv[d.lv].join(', ')||'')+'</span></div>';
   });
   specials.forEach(function(s){
-    rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'(<a href="https://www.0404.go.kr/dev/newest_warn.mofa" target="_blank" style="color:var(--special);text-decoration:underline;">직접 확인하기 : 외교부 특별여행주의보</a>)</span></div>';
+    rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'(<a href="https://www.0404.go.kr" target="_blank" style="color:var(--special);text-decoration:underline;">직접 확인하기 : 외교부 특별여행주의보</a>)</span></div>';
   });
   rows+='<div class="nnote">※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
 
