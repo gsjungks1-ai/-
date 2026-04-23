@@ -127,7 +127,7 @@ h1{font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:-0.03em;backgro
 
 <script>
 /* ★ YOUR_API_KEY_HERE 를 발급받은 인증키로 교체하세요 ★ */
-var API_KEY = '14742072d0c3b0ff15b098e641c65aca2ba05692e6b693c30060a5fe09568ae6';
+var API_KEY = 'YOUR_API_KEY_HERE';
 
 var API_ALERT   = 'https://apis.data.go.kr/1262000/TravelAlarmService0404/getTravelAlarm0404List';
 var API_SPECIAL = 'https://apis.data.go.kr/1262000/SpecialAlarmService/getSpecialAlarmList';
@@ -264,20 +264,14 @@ function processResults(names,alertData,specialData){
   });
 
   /* 특별여행주의보: country_nm 필드 사용 */
+  /* remark에 "특별여행주의보" 문구가 있는 국가를 자동 감지 */
   var specials=[];
-  try{
-    var sitems=specialData.response.body.items.item||[];
-    if(!Array.isArray(sitems))sitems=[sitems];
-    sitems.forEach(function(s){
-      var cname=s.country_nm||s.countryName||'';
-      var matched=names.find(function(n){
-        return cname===n;
-      });
-      if(matched){
-        specials.push({country:matched,areas:s.remark||s.deptDesc||'전 지역'});
-      }
-    });
-  }catch(e){}
+  countries.forEach(function(c){
+    var matched=allItems.find(function(item){return item.country_nm===c.name;});
+    if(matched&&matched.remark&&matched.remark.indexOf('특별여행주의보')!==-1){
+      specials.push({country:c.name});
+    }
+  });
 
   renderResult(countries,specials);
 }
@@ -298,23 +292,34 @@ function renderResult(countries,specials){
     });
   });
 
-  var lines=[
-    '■ 여행유의 : '+byLv[1].join(', '),
-    '■ 여행자제 : '+byLv[2].join(', '),
-    '■ 여행제한 : '+byLv[3].join(', '),
-    '■ 여행금지 : '+byLv[4].join(', ')
-  ];
-  specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'('+s.areas+')');});
+  /* 경보 없음 국가 목록 */
+  var noAlert=[];
+  countries.forEach(function(c){
+    if(c.mainLevel===0){noAlert.push(c.name+' - 해당사항 없음');}
+  });
+
+  var lines=[];
+  /* 경보 없음 국가를 맨 위에 */
+  noAlert.forEach(function(s){lines.push(s);});
+  lines.push('■ 여행유의 : '+byLv[1].join(', '));
+  lines.push('■ 여행자제 : '+byLv[2].join(', '));
+  lines.push('■ 여행제한 : '+byLv[3].join(', '));
+  lines.push('■ 여행금지 : '+byLv[4].join(', '));
+  specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'(직접 확인하기 : https://www.0404.go.kr/dev/newest_warn.mofa)');});
   lines.push("※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
   noticeText=lines.join('\n');
 
   var defs=[{lv:1,label:'■ 여행유의',cls:'l1'},{lv:2,label:'■ 여행자제',cls:'l2'},{lv:3,label:'■ 여행제한',cls:'l3'},{lv:4,label:'■ 여행금지',cls:'l4'}];
   var rows='';
+  /* 경보 없음 국가 맨 위에 */
+  noAlert.forEach(function(s){
+    rows+='<div class="nrow" style="color:var(--muted)">'+s+'</div>';
+  });
   defs.forEach(function(d){
     rows+='<div class="nrow"><span class="nlabel '+d.cls+'">'+d.label+' :</span><span class="nval">'+(byLv[d.lv].join(', ')||'')+'</span></div>';
   });
   specials.forEach(function(s){
-    rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'('+s.areas+')</span></div>';
+    rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'(<a href="https://www.0404.go.kr/dev/newest_warn.mofa" target="_blank" style="color:var(--special);text-decoration:underline;">직접 확인하기 : 외교부 특별여행주의보</a>)</span></div>';
   });
   rows+='<div class="nnote">※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
 
