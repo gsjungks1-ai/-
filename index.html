@@ -127,7 +127,7 @@ h1{font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:-0.03em;backgro
 
 <script>
 /* ★ YOUR_API_KEY_HERE 를 발급받은 인증키로 교체하세요 ★ */
-var API_KEY = '14742072d0c3b0ff15b098e641c65aca2ba05692e6b693c30060a5fe09568ae6';
+var API_KEY = 'YOUR_API_KEY_HERE';
 
 var API_ALERT   = 'https://apis.data.go.kr/1262000/TravelAlarmService0404/getTravelAlarm0404List';
 var API_SPECIAL = 'https://apis.data.go.kr/1262000/SpecialAlarmService/getSpecialAlarmList';
@@ -230,7 +230,7 @@ function processResults(names,alertData,specialData){
     /* 한글 국가명 완전일치 우선, 부분일치 허용 */
     var matched=allItems.filter(function(item){
       var cn=item.country_nm||'';
-      return cn===name||(cn.length>1&&name.indexOf(cn)!==-1)||(cn.length>1&&cn.indexOf(name)!==-1);
+      return cn===name;
     });
 
     if(matched.length===0){
@@ -271,7 +271,7 @@ function processResults(names,alertData,specialData){
     sitems.forEach(function(s){
       var cname=s.country_nm||s.countryName||'';
       var matched=names.find(function(n){
-        return cname===n||(cname.length>1&&n.indexOf(cname)!==-1)||(cname.length>1&&cname.indexOf(n)!==-1);
+        return cname===n;
       });
       if(matched){
         specials.push({country:matched,areas:s.remark||s.deptDesc||'전 지역'});
