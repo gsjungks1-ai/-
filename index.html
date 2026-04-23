@@ -7,85 +7,85 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=DM+Mono:wght@400;500&display=swap');
 :root {
-  --bg: #0a0e1a; --surface: #111827; --surface2: #1a2235; --border: #1e2d45;
-  --text: #e8edf5; --muted: #6b7fa3; --accent: #3b82f6;
-  --lv1: #eab308; --lv2: #f97316; --lv3: #ef4444; --lv4: #9ca3af; --special: #a855f7;
+  --bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--border:#1e2d45;
+  --text:#e8edf5;--muted:#6b7fa3;--accent:#3b82f6;
+  --lv1:#eab308;--lv2:#f97316;--lv3:#ef4444;--lv4:#9ca3af;--special:#a855f7;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 80px; }
-body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
-header { text-align: center; margin-bottom: 40px; }
-.logo-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); border-radius: 100px; padding: 6px 16px; font-size: 12px; font-family: 'DM Mono', monospace; color: var(--accent); letter-spacing: 0.08em; margin-bottom: 20px; }
-.logo-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: blink 2s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
-h1 { font-size: clamp(26px,5vw,44px); font-weight: 900; letter-spacing: -0.03em; background: linear-gradient(135deg,#e8edf5 0%,#6b9fd4 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 10px; }
-.subtitle { color: var(--muted); font-size: 14px; }
-.search-wrap { width: 100%; max-width: 760px; margin-bottom: 32px; position: relative; }
-.search-box { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; transition: border-color 0.2s, box-shadow 0.2s; }
-.search-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
-#globeBtn { width: 52px; flex-shrink: 0; background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--muted); transition: color 0.2s; border-radius: 16px 0 0 16px; display: flex; align-items: center; justify-content: center; }
-#globeBtn:hover, #globeBtn.active { color: var(--accent); }
-#searchInput { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 15px; font-family: 'Noto Sans KR', sans-serif; padding: 18px 8px; }
-#searchInput::placeholder { color: var(--muted); }
-#searchBtn { background: var(--accent); border: none; color: white; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; padding: 18px 28px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; border-radius: 0 16px 16px 0; }
-#searchBtn:hover { background: #2563eb; }
-#searchBtn:disabled { background: var(--border); cursor: not-allowed; }
-#dropdown { position: absolute; top: calc(100% + 8px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 999; overflow: hidden; display: none; }
-#dropdown.open { display: block; }
-.dd-header { padding: 14px 18px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
-.dd-title { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.dd-actions { display: flex; gap: 8px; }
-.dd-clear { font-size: 11px; font-family: 'Noto Sans KR', sans-serif; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--muted); padding: 4px 10px; cursor: pointer; }
-.dd-clear:hover { border-color: var(--accent); color: var(--text); }
-.dd-apply { font-size: 11px; font-family: 'Noto Sans KR', sans-serif; background: var(--accent); border: none; border-radius: 6px; color: white; padding: 4px 12px; cursor: pointer; font-weight: 700; }
-.dd-apply:hover { background: #2563eb; }
-#selectedTags { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 18px; }
-#selectedTags:empty { display: none; }
-.tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.3); border-radius: 100px; padding: 3px 10px; font-size: 12px; color: var(--accent); }
-.tag-x { cursor: pointer; background: none; border: none; color: var(--accent); font-size: 14px; line-height: 1; padding: 0; opacity: 0.6; }
-.tag-x:hover { opacity: 1; }
-#continentTabs { display: flex; border-bottom: 1px solid var(--border); padding: 0 18px; overflow-x: auto; }
-.ctab { background: none; border: none; border-bottom: 2px solid transparent; font-family: 'Noto Sans KR', sans-serif; font-size: 12px; font-weight: 600; color: var(--muted); padding: 8px 12px; cursor: pointer; white-space: nowrap; margin-bottom: -1px; transition: all 0.15s; }
-.ctab:hover { color: var(--text); }
-.ctab.active { color: var(--accent); border-bottom-color: var(--accent); }
-#countryGrid { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: 6px; padding: 12px 18px 16px; max-height: 240px; overflow-y: auto; }
-#countryGrid::-webkit-scrollbar { width: 4px; }
-#countryGrid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-.copt { display: flex; align-items: center; gap: 7px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; color: var(--muted); cursor: pointer; user-select: none; transition: all 0.15s; }
-.copt:hover { border-color: var(--accent); color: var(--text); background: rgba(59,130,246,0.08); }
-.copt.on { border-color: var(--accent); color: var(--accent); background: rgba(59,130,246,0.12); }
-.hint { font-size: 12px; color: var(--muted); margin-top: 10px; padding-left: 4px; }
-.quick-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.qlabel { font-size: 11px; color: var(--muted); align-self: center; }
-.qbtn { background: var(--surface2); border: 1px solid var(--border); border-radius: 100px; color: var(--muted); font-size: 12px; font-family: 'Noto Sans KR', sans-serif; padding: 5px 13px; cursor: pointer; transition: all 0.2s; }
-.qbtn:hover { border-color: var(--accent); color: var(--text); background: rgba(59,130,246,0.08); }
-.result-area { width: 100%; max-width: 760px; }
-.loading { display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 60px 20px; color: var(--muted); }
-.spinner { width: 36px; height: 36px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.lstep { font-size: 13px; opacity: 0; animation: fin 0.5s ease forwards; }
-.lstep.s1 { animation-delay: 0.2s; } .lstep.s2 { animation-delay: 0.8s; }
-@keyframes fin { to { opacity: 1; } }
-.rcard { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; animation: up 0.4s ease; margin-bottom: 16px; }
-@keyframes up { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-.rcard-head { padding: 20px 28px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.rcard-title { font-size: 15px; font-weight: 700; color: var(--muted); }
-.live-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 100px; padding: 3px 10px; font-size: 10px; color: #22c55e; font-family: 'DM Mono', monospace; }
-.live-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: #22c55e; animation: blink 1.5s infinite; }
-.notice-wrap { padding: 24px 28px 20px; }
-.notice-box { background: #080c18; border: 1px solid var(--border); border-radius: 12px; padding: 22px 26px; font-size: 14px; line-height: 2.1; }
-.nrow { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
-.nlabel { font-weight: 700; white-space: nowrap; flex-shrink: 0; }
-.nlabel.l1{color:var(--lv1)} .nlabel.l2{color:var(--lv2)} .nlabel.l3{color:var(--lv3)} .nlabel.l4{color:var(--lv4)} .nlabel.ls{color:var(--special)}
-.nval { word-break: keep-all; }
-.nnote { color: var(--muted); font-size: 12.5px; margin-top: 6px; line-height: 1.6; }
-.copy-btn { display: flex; align-items: center; gap: 8px; margin-top: 14px; margin-left: auto; background: var(--accent); border: none; border-radius: 10px; color: white; font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 700; padding: 10px 22px; cursor: pointer; transition: background 0.2s; }
-.copy-btn:hover { background: #2563eb; } .copy-btn.ok { background: #16a34a; }
-.disclaimer { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.7; padding: 14px 16px; background: var(--surface2); border-radius: 10px; border: 1px solid var(--border); margin-top: 8px; }
-.disclaimer a { color: var(--accent); text-decoration: none; }
-.err-card { text-align: center; padding: 48px 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; }
-.err-icon { font-size: 40px; margin-bottom: 16px; }
-.err-msg { color: var(--muted); font-size: 14px; line-height: 1.8; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 80px;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(59,130,246,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;}
+header{text-align:center;margin-bottom:40px;}
+.logo-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.25);border-radius:100px;padding:6px 16px;font-size:12px;font-family:'DM Mono',monospace;color:var(--accent);letter-spacing:0.08em;margin-bottom:20px;}
+.logo-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:-0.03em;background:linear-gradient(135deg,#e8edf5 0%,#6b9fd4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;}
+.subtitle{color:var(--muted);font-size:14px;}
+.search-wrap{width:100%;max-width:760px;margin-bottom:32px;position:relative;}
+.search-box{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:16px;transition:border-color 0.2s,box-shadow 0.2s;}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.15);}
+#globeBtn{width:52px;flex-shrink:0;background:transparent;border:none;font-size:20px;cursor:pointer;color:var(--muted);transition:color 0.2s;border-radius:16px 0 0 16px;display:flex;align-items:center;justify-content:center;}
+#globeBtn:hover,#globeBtn.active{color:var(--accent);}
+#searchInput{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:15px;font-family:'Noto Sans KR',sans-serif;padding:18px 8px;}
+#searchInput::placeholder{color:var(--muted);}
+#searchBtn{background:var(--accent);border:none;color:white;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;padding:18px 28px;cursor:pointer;transition:background 0.2s;flex-shrink:0;border-radius:0 16px 16px 0;}
+#searchBtn:hover{background:#2563eb;}
+#searchBtn:disabled{background:var(--border);cursor:not-allowed;}
+#dropdown{position:absolute;top:calc(100% + 8px);left:0;right:0;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.6);z-index:999;overflow:hidden;display:none;}
+#dropdown.open{display:block;}
+.dd-header{padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.dd-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;}
+.dd-actions{display:flex;gap:8px;}
+.dd-clear{font-size:11px;font-family:'Noto Sans KR',sans-serif;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:4px 10px;cursor:pointer;}
+.dd-clear:hover{border-color:var(--accent);color:var(--text);}
+.dd-apply{font-size:11px;font-family:'Noto Sans KR',sans-serif;background:var(--accent);border:none;border-radius:6px;color:white;padding:4px 12px;cursor:pointer;font-weight:700;}
+.dd-apply:hover{background:#2563eb;}
+#selectedTags{display:flex;flex-wrap:wrap;gap:6px;padding:10px 18px;}
+#selectedTags:empty{display:none;}
+.tag{display:inline-flex;align-items:center;gap:5px;background:rgba(59,130,246,0.15);border:1px solid rgba(59,130,246,0.3);border-radius:100px;padding:3px 10px;font-size:12px;color:var(--accent);}
+.tag-x{cursor:pointer;background:none;border:none;color:var(--accent);font-size:14px;line-height:1;padding:0;opacity:0.6;}
+.tag-x:hover{opacity:1;}
+#continentTabs{display:flex;border-bottom:1px solid var(--border);padding:0 18px;overflow-x:auto;}
+.ctab{background:none;border:none;border-bottom:2px solid transparent;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;color:var(--muted);padding:8px 12px;cursor:pointer;white-space:nowrap;margin-bottom:-1px;transition:all 0.15s;}
+.ctab:hover{color:var(--text);}
+.ctab.active{color:var(--accent);border-bottom-color:var(--accent);}
+#countryGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;padding:12px 18px 16px;max-height:240px;overflow-y:auto;}
+#countryGrid::-webkit-scrollbar{width:4px;}
+#countryGrid::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.copt{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:12px;font-family:'Noto Sans KR',sans-serif;color:var(--muted);cursor:pointer;user-select:none;transition:all 0.15s;}
+.copt:hover{border-color:var(--accent);color:var(--text);background:rgba(59,130,246,0.08);}
+.copt.on{border-color:var(--accent);color:var(--accent);background:rgba(59,130,246,0.12);}
+.hint{font-size:12px;color:var(--muted);margin-top:10px;padding-left:4px;}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.qlabel{font-size:11px;color:var(--muted);align-self:center;}
+.qbtn{background:var(--surface2);border:1px solid var(--border);border-radius:100px;color:var(--muted);font-size:12px;font-family:'Noto Sans KR',sans-serif;padding:5px 13px;cursor:pointer;transition:all 0.2s;}
+.qbtn:hover{border-color:var(--accent);color:var(--text);background:rgba(59,130,246,0.08);}
+.result-area{width:100%;max-width:760px;}
+.loading{display:flex;flex-direction:column;align-items:center;gap:20px;padding:60px 20px;color:var(--muted);}
+.spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lstep{font-size:13px;opacity:0;animation:fin 0.5s ease forwards;}
+.lstep.s1{animation-delay:0.2s;}.lstep.s2{animation-delay:0.8s;}
+@keyframes fin{to{opacity:1;}}
+.rcard{background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;animation:up 0.4s ease;margin-bottom:16px;}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.rcard-head{padding:20px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.rcard-title{font-size:15px;font-weight:700;color:var(--muted);}
+.live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);border-radius:100px;padding:3px 10px;font-size:10px;color:#22c55e;font-family:'DM Mono',monospace;}
+.live-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:#22c55e;animation:blink 1.5s infinite;}
+.notice-wrap{padding:24px 28px 20px;}
+.notice-box{background:#080c18;border:1px solid var(--border);border-radius:12px;padding:22px 26px;font-size:14px;line-height:2.1;}
+.nrow{display:flex;gap:6px;align-items:baseline;flex-wrap:wrap;}
+.nlabel{font-weight:700;white-space:nowrap;flex-shrink:0;}
+.nlabel.l1{color:var(--lv1);}.nlabel.l2{color:var(--lv2);}.nlabel.l3{color:var(--lv3);}.nlabel.l4{color:var(--lv4);}.nlabel.ls{color:var(--special);}
+.nval{word-break:keep-all;}
+.nnote{color:var(--muted);font-size:12.5px;margin-top:6px;line-height:1.6;}
+.copy-btn{display:flex;align-items:center;gap:8px;margin-top:14px;margin-left:auto;background:var(--accent);border:none;border-radius:10px;color:white;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;padding:10px 22px;cursor:pointer;transition:background 0.2s;}
+.copy-btn:hover{background:#2563eb;}.copy-btn.ok{background:#16a34a;}
+.disclaimer{font-size:11px;color:var(--muted);text-align:center;line-height:1.7;padding:14px 16px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);margin-top:8px;}
+.disclaimer a{color:var(--accent);text-decoration:none;}
+.err-card{text-align:center;padding:48px 32px;background:var(--surface);border:1px solid var(--border);border-radius:20px;}
+.err-icon{font-size:40px;margin-bottom:16px;}
+.err-msg{color:var(--muted);font-size:14px;line-height:1.8;}
 </style>
 </head>
 <body>
@@ -124,12 +124,14 @@ h1 { font-size: clamp(26px,5vw,44px); font-weight: 900; letter-spacing: -0.03em;
   </div>
 </div>
 <div class="result-area" id="resultArea"></div>
+
 <script>
 /* ★ YOUR_API_KEY_HERE 를 발급받은 인증키로 교체하세요 ★ */
 var API_KEY = '14742072d0c3b0ff15b098e641c65aca2ba05692e6b693c30060a5fe09568ae6';
 
 var API_ALERT   = 'https://apis.data.go.kr/1262000/TravelAlarmService0404/getTravelAlarm0404List';
 var API_SPECIAL = 'https://apis.data.go.kr/1262000/SpecialAlarmService/getSpecialAlarmList';
+
 var CONTINENTS = [
   {id:'asia',label:'🌏 아시아',list:[{n:'일본',f:'🇯🇵'},{n:'중국',f:'🇨🇳'},{n:'베트남',f:'🇻🇳'},{n:'태국',f:'🇹🇭'},{n:'필리핀',f:'🇵🇭'},{n:'인도네시아',f:'🇮🇩'},{n:'말레이시아',f:'🇲🇾'},{n:'싱가포르',f:'🇸🇬'},{n:'캄보디아',f:'🇰🇭'},{n:'라오스',f:'🇱🇦'},{n:'미얀마',f:'🇲🇲'},{n:'인도',f:'🇮🇳'},{n:'네팔',f:'🇳🇵'},{n:'스리랑카',f:'🇱🇰'},{n:'방글라데시',f:'🇧🇩'},{n:'파키스탄',f:'🇵🇰'},{n:'몽골',f:'🇲🇳'},{n:'대만',f:'🇹🇼'},{n:'홍콩',f:'🇭🇰'},{n:'마카오',f:'🇲🇴'}]},
   {id:'europe',label:'🌍 유럽',list:[{n:'프랑스',f:'🇫🇷'},{n:'독일',f:'🇩🇪'},{n:'이탈리아',f:'🇮🇹'},{n:'스페인',f:'🇪🇸'},{n:'포르투갈',f:'🇵🇹'},{n:'영국',f:'🇬🇧'},{n:'네덜란드',f:'🇳🇱'},{n:'벨기에',f:'🇧🇪'},{n:'스위스',f:'🇨🇭'},{n:'오스트리아',f:'🇦🇹'},{n:'체코',f:'🇨🇿'},{n:'폴란드',f:'🇵🇱'},{n:'헝가리',f:'🇭🇺'},{n:'그리스',f:'🇬🇷'},{n:'크로아티아',f:'🇭🇷'},{n:'튀르키예',f:'🇹🇷'},{n:'스웨덴',f:'🇸🇪'},{n:'노르웨이',f:'🇳🇴'},{n:'덴마크',f:'🇩🇰'},{n:'핀란드',f:'🇫🇮'},{n:'우크라이나',f:'🇺🇦'},{n:'러시아',f:'🇷🇺'}]},
@@ -138,14 +140,62 @@ var CONTINENTS = [
   {id:'oceania',label:'🦘 오세아니아',list:[{n:'호주',f:'🇦🇺'},{n:'뉴질랜드',f:'🇳🇿'},{n:'괌',f:'🇬🇺'},{n:'사이판',f:'🇲🇵'},{n:'피지',f:'🇫🇯'}]},
   {id:'africa',label:'🌍 아프리카',list:[{n:'모로코',f:'🇲🇦'},{n:'튀니지',f:'🇹🇳'},{n:'케냐',f:'🇰🇪'},{n:'탄자니아',f:'🇹🇿'},{n:'남아프리카공화국',f:'🇿🇦'},{n:'에티오피아',f:'🇪🇹'},{n:'나이지리아',f:'🇳🇬'},{n:'가나',f:'🇬🇭'}]}
 ];
+
 var sel=[],curTab='asia',ddOpen=false,noticeText='';
+
 function openDD(){ddOpen=true;document.getElementById('dropdown').classList.add('open');document.getElementById('globeBtn').classList.add('active');renderTabs();renderGrid();}
 function closeDD(){ddOpen=false;document.getElementById('dropdown').classList.remove('open');document.getElementById('globeBtn').classList.remove('active');}
-function renderTabs(){var el=document.getElementById('continentTabs');el.innerHTML='';CONTINENTS.forEach(function(c){var b=document.createElement('button');b.className='ctab'+(c.id===curTab?' active':'');b.textContent=c.label;b.addEventListener('click',function(e){e.stopPropagation();curTab=c.id;document.querySelectorAll('.ctab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');renderGrid();});el.appendChild(b);});}
-function renderGrid(){var cont=CONTINENTS.find(function(c){return c.id===curTab;});var el=document.getElementById('countryGrid');el.innerHTML='';cont.list.forEach(function(country){var div=document.createElement('div');div.className='copt'+(sel.indexOf(country.n)!==-1?' on':'');div.innerHTML='<span style="font-size:15px">'+country.f+'</span>'+country.n;div.addEventListener('click',function(e){e.stopPropagation();var i=sel.indexOf(country.n);if(i===-1){sel.push(country.n);div.classList.add('on');}else{sel.splice(i,1);div.classList.remove('on');}renderTags();});el.appendChild(div);});}
-function renderTags(){var el=document.getElementById('selectedTags');el.innerHTML='';sel.forEach(function(name){var sp=document.createElement('span');sp.className='tag';sp.textContent=name+' ';var x=document.createElement('button');x.className='tag-x';x.textContent='×';x.addEventListener('click',function(e){e.stopPropagation();sel.splice(sel.indexOf(name),1);renderTags();renderGrid();});sp.appendChild(x);el.appendChild(sp);});}
-function fetchAlert(n){return fetch(API_ALERT+'?serviceKey='+encodeURIComponent(API_KEY)+'&numOfRows=10&pageNo=1&returnType=JSON&countryName='+encodeURIComponent(n)).then(function(r){return r.json();});}
-function fetchSpecial(){return fetch(API_SPECIAL+'?serviceKey='+encodeURIComponent(API_KEY)+'&numOfRows=100&pageNo=1&returnType=JSON').then(function(r){return r.json();});}
+
+function renderTabs(){
+  var el=document.getElementById('continentTabs');el.innerHTML='';
+  CONTINENTS.forEach(function(c){
+    var b=document.createElement('button');
+    b.className='ctab'+(c.id===curTab?' active':'');
+    b.textContent=c.label;
+    b.addEventListener('click',function(e){e.stopPropagation();curTab=c.id;document.querySelectorAll('.ctab').forEach(function(x){x.classList.remove('active');});b.classList.add('active');renderGrid();});
+    el.appendChild(b);
+  });
+}
+
+function renderGrid(){
+  var cont=CONTINENTS.find(function(c){return c.id===curTab;});
+  var el=document.getElementById('countryGrid');el.innerHTML='';
+  cont.list.forEach(function(country){
+    var div=document.createElement('div');
+    div.className='copt'+(sel.indexOf(country.n)!==-1?' on':'');
+    div.innerHTML='<span style="font-size:15px">'+country.f+'</span>'+country.n;
+    div.addEventListener('click',function(e){
+      e.stopPropagation();
+      var i=sel.indexOf(country.n);
+      if(i===-1){sel.push(country.n);div.classList.add('on');}
+      else{sel.splice(i,1);div.classList.remove('on');}
+      renderTags();
+    });
+    el.appendChild(div);
+  });
+}
+
+function renderTags(){
+  var el=document.getElementById('selectedTags');el.innerHTML='';
+  sel.forEach(function(name){
+    var sp=document.createElement('span');sp.className='tag';sp.textContent=name+' ';
+    var x=document.createElement('button');x.className='tag-x';x.textContent='×';
+    x.addEventListener('click',function(e){e.stopPropagation();sel.splice(sel.indexOf(name),1);renderTags();renderGrid();});
+    sp.appendChild(x);el.appendChild(sp);
+  });
+}
+
+/* ── API 호출 ── */
+function fetchAllAlerts(){
+  /* numOfRows=300으로 전체 목록 한 번에 받아서 프론트에서 필터링 */
+  return fetch(API_ALERT+'?serviceKey='+encodeURIComponent(API_KEY)+'&numOfRows=300&pageNo=1&returnType=JSON')
+    .then(function(r){return r.json();});
+}
+function fetchSpecial(){
+  return fetch(API_SPECIAL+'?serviceKey='+encodeURIComponent(API_KEY)+'&numOfRows=100&pageNo=1&returnType=JSON')
+    .then(function(r){return r.json();});
+}
+
 function doSearch(){
   var query=document.getElementById('searchInput').value.trim();
   if(!query)return;
@@ -154,38 +204,128 @@ function doSearch(){
   var btn=document.getElementById('searchBtn'),area=document.getElementById('resultArea');
   btn.disabled=true;btn.textContent='조회 중...';noticeText='';
   area.innerHTML='<div class="loading"><div class="spinner"></div><div style="display:flex;flex-direction:column;gap:10px;text-align:center"><div class="lstep s1">🏛 외교부 공공데이터 조회 중...</div><div class="lstep s2">📋 경보 단계 분류 중...</div></div></div>';
+
   var names=query.split(',').map(function(n){return n.trim();}).filter(Boolean);
-  Promise.all([Promise.all(names.map(function(name){return fetchAlert(name).then(function(data){return{name:name,data:data};}).catch(function(){return{name:name,data:null};});})),fetchSpecial().catch(function(){return null;})])
+
+  Promise.all([
+    fetchAllAlerts().catch(function(){return null;}),
+    fetchSpecial().catch(function(){return null;})
+  ])
   .then(function(results){processResults(names,results[0],results[1]);})
-  .catch(function(err){area.innerHTML='<div class="err-card"><div class="err-icon">⚠️</div><div class="err-msg">오류가 발생했습니다.<br><small>'+err.message+'</small></div></div>';})
+  .catch(function(err){
+    area.innerHTML='<div class="err-card"><div class="err-icon">⚠️</div><div class="err-msg">오류가 발생했습니다.<br><small>'+err.message+'</small></div></div>';
+  })
   .finally(function(){btn.disabled=false;btn.textContent='조회하기';});
 }
-function processResults(names,alertResults,specialData){
-  var countries=[];
-  alertResults.forEach(function(r){
-    var items=[];
-    try{items=r.data.response.body.items.item||[];if(!Array.isArray(items))items=[items];}catch(e){items=[];}
-    if(items.length===0){countries.push({name:r.name,mainLevel:0,mainNote:'',subRegions:[]});return;}
-    var mainItem=items[0],mainLevel=parseInt(mainItem.alarmLvl||'0',10),mainNote=(mainItem.regionType==='W')?'전 지역':(mainItem.deptDesc||''),subRegions=[];
-    if(items.length>1){var levelMap={};items.forEach(function(item){var lv=parseInt(item.alarmLvl||'0',10);if(!levelMap[lv])levelMap[lv]=[];levelMap[lv].push(item.deptDesc||'');});var levels=Object.keys(levelMap).map(Number).sort(function(a,b){return a-b;});mainLevel=levels[0];mainNote=levelMap[mainLevel].join(', ');levels.slice(1).forEach(function(lv){var lvN={1:'여행유의',2:'여행자제',3:'여행제한',4:'여행금지'};subRegions.push({level:lv,levelName:lvN[lv]||lv+'단계',areas:levelMap[lv].join(', ')});});}
-    countries.push({name:r.name,mainLevel:mainLevel,mainNote:mainNote,subRegions:subRegions});
+
+function processResults(names,alertData,specialData){
+  /* 실제 API 필드명: alarm_lvl / country_nm / region_ty / remark */
+  var allItems=[];
+  try{
+    allItems=alertData.response.body.items.item||[];
+    if(!Array.isArray(allItems))allItems=[allItems];
+  }catch(e){allItems=[];}
+
+  var countries=names.map(function(name){
+    /* 한글 국가명 완전일치 우선, 부분일치 허용 */
+    var matched=allItems.filter(function(item){
+      var cn=item.country_nm||'';
+      return cn===name||(cn.length>1&&name.indexOf(cn)!==-1)||(cn.length>1&&cn.indexOf(name)!==-1);
+    });
+
+    if(matched.length===0){
+      return {name:name,mainLevel:0,mainNote:'경보 없음',subRegions:[]};
+    }
+
+    if(matched.length===1){
+      var item=matched[0];
+      var lv=parseInt(item.alarm_lvl||'0',10);
+      var note=(item.region_ty==='전체')?'전 지역':(item.remark||'전 지역');
+      return {name:name,mainLevel:lv,mainNote:note,subRegions:[]};
+    }
+
+    /* 여러 지역 → 단계별 그룹핑 */
+    var levelMap={};
+    matched.forEach(function(item){
+      var lv=parseInt(item.alarm_lvl||'0',10);
+      if(!levelMap[lv])levelMap[lv]=[];
+      var area=item.remark||item.region_ty||'';
+      if(area)levelMap[lv].push(area);
+    });
+    var levels=Object.keys(levelMap).map(Number).sort(function(a,b){return a-b;});
+    var mainLevel=levels[0];
+    var mainNote=levelMap[mainLevel].join(', ')||'일부 지역';
+    var subRegions=[];
+    levels.slice(1).forEach(function(lv){
+      var lvN={1:'여행유의',2:'여행자제',3:'여행제한',4:'여행금지'};
+      subRegions.push({level:lv,levelName:lvN[lv]||lv+'단계',areas:levelMap[lv].join(', ')});
+    });
+    return {name:name,mainLevel:mainLevel,mainNote:mainNote,subRegions:subRegions};
   });
+
+  /* 특별여행주의보: country_nm 필드 사용 */
   var specials=[];
-  try{var sitems=specialData.response.body.items.item||[];if(!Array.isArray(sitems))sitems=[sitems];sitems.forEach(function(s){var cname=s.countryName||'';var matched=names.find(function(n){return cname.indexOf(n)!==-1||n.indexOf(cname)!==-1;});if(matched)specials.push({country:matched,areas:s.deptDesc||'전 지역'});});}catch(e){}
+  try{
+    var sitems=specialData.response.body.items.item||[];
+    if(!Array.isArray(sitems))sitems=[sitems];
+    sitems.forEach(function(s){
+      var cname=s.country_nm||s.countryName||'';
+      var matched=names.find(function(n){
+        return cname===n||(cname.length>1&&n.indexOf(cname)!==-1)||(cname.length>1&&cname.indexOf(n)!==-1);
+      });
+      if(matched){
+        specials.push({country:matched,areas:s.remark||s.deptDesc||'전 지역'});
+      }
+    });
+  }catch(e){}
+
   renderResult(countries,specials);
 }
+
 function renderResult(countries,specials){
-  var area=document.getElementById('resultArea'),byLv={1:[],2:[],3:[],4:[]};
-  countries.forEach(function(c){var lv=c.mainLevel;if(lv>=1&&lv<=4)byLv[lv].push(c.name+(c.mainNote?'('+c.mainNote+')':''));(c.subRegions||[]).forEach(function(r){if(r.level>=1&&r.level<=4)byLv[r.level].push(c.name+'('+r.areas+')');});});
-  var lines=['■ 여행유의 : '+byLv[1].join(', '),'■ 여행자제 : '+byLv[2].join(', '),'■ 여행제한 : '+byLv[3].join(', '),'■ 여행금지 : '+byLv[4].join(', ')];
+  var area=document.getElementById('resultArea');
+  var byLv={1:[],2:[],3:[],4:[]};
+
+  countries.forEach(function(c){
+    var lv=c.mainLevel;
+    if(lv>=1&&lv<=4){
+      byLv[lv].push(c.name+(c.mainNote?'('+c.mainNote+')':''));
+    }
+    (c.subRegions||[]).forEach(function(r){
+      if(r.level>=1&&r.level<=4){
+        byLv[r.level].push(c.name+'('+r.areas+')');
+      }
+    });
+  });
+
+  var lines=[
+    '■ 여행유의 : '+byLv[1].join(', '),
+    '■ 여행자제 : '+byLv[2].join(', '),
+    '■ 여행제한 : '+byLv[3].join(', '),
+    '■ 여행금지 : '+byLv[4].join(', ')
+  ];
   specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'('+s.areas+')');});
   lines.push("※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
   noticeText=lines.join('\n');
-  var defs=[{lv:1,label:'■ 여행유의',cls:'l1'},{lv:2,label:'■ 여행자제',cls:'l2'},{lv:3,label:'■ 여행제한',cls:'l3'},{lv:4,label:'■ 여행금지',cls:'l4'}],rows='';
-  defs.forEach(function(d){rows+='<div class="nrow"><span class="nlabel '+d.cls+'">'+d.label+' :</span><span class="nval">'+(byLv[d.lv].join(', ')||'')+'</span></div>';});
-  specials.forEach(function(s){rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'('+s.areas+')</span></div>';});
+
+  var defs=[{lv:1,label:'■ 여행유의',cls:'l1'},{lv:2,label:'■ 여행자제',cls:'l2'},{lv:3,label:'■ 여행제한',cls:'l3'},{lv:4,label:'■ 여행금지',cls:'l4'}];
+  var rows='';
+  defs.forEach(function(d){
+    rows+='<div class="nrow"><span class="nlabel '+d.cls+'">'+d.label+' :</span><span class="nval">'+(byLv[d.lv].join(', ')||'')+'</span></div>';
+  });
+  specials.forEach(function(s){
+    rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'('+s.areas+')</span></div>';
+  });
   rows+='<div class="nnote">※ 여행경보단계는 여행유의/자제/제한/금지 4단계로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
-  area.innerHTML='<div class="rcard"><div class="rcard-head"><div class="rcard-title">📋 고시문 (복사 후 바로 사용)</div><div class="live-badge">외교부 공식 데이터</div></div><div class="notice-wrap"><div class="notice-box">'+rows+'</div><button class="copy-btn" id="copyBtn">📋 텍스트 복사</button></div></div><div class="disclaimer">데이터 출처: 외교부 공공데이터포털 | 상세 정보: <a href="https://www.0404.go.kr" target="_blank">외교부 해외안전여행 (0404.go.kr)</a></div>';
+
+  area.innerHTML=
+    '<div class="rcard">'
+    +'<div class="rcard-head"><div class="rcard-title">📋 고시문 (복사 후 바로 사용)</div><div class="live-badge">외교부 공식 데이터</div></div>'
+    +'<div class="notice-wrap"><div class="notice-box">'+rows+'</div>'
+    +'<button class="copy-btn" id="copyBtn">📋 텍스트 복사</button></div>'
+    +'</div>'
+    +'<div class="disclaimer">데이터 출처: 외교부 공공데이터포털 | 상세 정보: <a href="https://www.0404.go.kr" target="_blank">외교부 해외안전여행 (0404.go.kr)</a></div>';
+
   document.getElementById('copyBtn').addEventListener('click',function(){
     var btn=document.getElementById('copyBtn');
     function onOk(){btn.textContent='✅ 복사됨!';btn.classList.add('ok');setTimeout(function(){btn.textContent='📋 텍스트 복사';btn.classList.remove('ok');},2000);}
@@ -193,6 +333,7 @@ function renderResult(countries,specials){
     function fb(){var ta=document.getElementById('copyTarget');ta.value=noticeText;ta.style.left='0';ta.style.top='0';ta.removeAttribute('readonly');ta.focus();ta.select();try{document.execCommand('copy');onOk();}catch(e){}ta.setAttribute('readonly','');ta.style.left='-9999px';}
   });
 }
+
 document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('globeBtn').addEventListener('click',function(e){e.stopPropagation();if(ddOpen)closeDD();else openDD();});
   document.getElementById('searchBtn').addEventListener('click',doSearch);
