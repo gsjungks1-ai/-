@@ -268,7 +268,7 @@ function processResults(names,alertData,specialData){
     var mainNote=levelMap[mainLevel].join(', ')||'일부 지역';
     var subRegions=[];
     levels.slice(1).forEach(function(lv){
-      var lvN={1:'여행유의',2:'여행자제',3:'여행제한',4:'여행금지'};
+      var lvN={1:'여행유의',2:'여행자제',3:'출국권고',4:'여행금지'};
       subRegions.push({level:lv,levelName:lvN[lv]||lv+'단계',areas:levelMap[lv].join(', ')});
     });
     return {name:name,mainLevel:mainLevel,mainNote:mainNote,subRegions:subRegions};
@@ -320,13 +320,13 @@ function renderResult(countries,specials){
   noAlert.forEach(function(s){lines.push(s);});
   lines.push('■ 여행유의 : '+byLv[1].join(', '));
   lines.push('■ 여행자제 : '+byLv[2].join(', '));
-  lines.push('■ 여행제한 : '+byLv[3].join(', '));
+  lines.push('■ 출국권고 : '+byLv[3].join(', '));
   lines.push('■ 여행금지 : '+byLv[4].join(', '));
   specials.forEach(function(s){lines.push('[특별] 특별여행주의보 : '+s.country+'(직접 확인하기 : https://www.0404.go.kr)');});
-  lines.push("※ 여행경보단계는 여행유의/자제/제한/금지 4단계 + 특별여행주의보로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
+  lines.push("※ 여행경보단계는 여행유의/여행자제/출국권고/여행금지 4단계 + 특별여행주의보로 구분되며, 외교부 '해외안전여행' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.");
   noticeText=lines.join('\n');
 
-  var defs=[{lv:1,label:'■ 여행유의',cls:'l1'},{lv:2,label:'■ 여행자제',cls:'l2'},{lv:3,label:'■ 여행제한',cls:'l3'},{lv:4,label:'■ 여행금지',cls:'l4'}];
+  var defs=[{lv:1,label:'■ 여행유의',cls:'l1'},{lv:2,label:'■ 여행자제',cls:'l2'},{lv:3,label:'■ 출국권고',cls:'l3'},{lv:4,label:'■ 여행금지',cls:'l4'}];
   var rows='';
   /* 경보 없음 국가 맨 위에 */
   noAlert.forEach(function(s){
@@ -338,7 +338,7 @@ function renderResult(countries,specials){
   specials.forEach(function(s){
     rows+='<div class="nrow"><span class="nlabel ls">[특별] 특별여행주의보 :</span><span class="nval">'+s.country+'(<a href="https://www.0404.go.kr" target="_blank" style="color:var(--special);text-decoration:underline;">직접 확인하기 : 외교부 특별여행주의보</a>)</span></div>';
   });
-  rows+='<div class="nnote">※ 여행경보단계는 여행유의/자제/제한/금지 4단계 + 특별여행주의보로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
+  rows+='<div class="nnote">※ 여행경보단계는 여행유의/여행자제/출국권고/여행금지 4단계 + 특별여행주의보로 구분되며, 외교부 \'해외안전여행\' 사이트(www.0404.go.kr)에서 상세정보를 확인할 수 있습니다.</div>';
 
   area.innerHTML=
     '<div class="rcard">'
